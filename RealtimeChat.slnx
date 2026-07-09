@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/RealtimeChat.Application/RealtimeChat.Application.csproj" />
+    <Project Path="src/RealtimeChat.Client.Wpf/RealtimeChat.Client.Wpf.csproj" />
+    <Project Path="src/RealtimeChat.Domain/RealtimeChat.Domain.csproj" />
+    <Project Path="src/RealtimeChat.Infrastructure/RealtimeChat.Infrastructure.csproj" />
+    <Project Path="src/RealtimeChat.WebApi/RealtimeChat.WebApi.csproj" />
+  </Folder>
+</Solution>
