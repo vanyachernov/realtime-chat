@@ -12,14 +12,14 @@ Log.Logger = new LoggerConfiguration()
 try
 {
     var builder = WebApplication.CreateBuilder(args);
-    
+
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
         .WriteTo.Console()
         .WriteTo.File("logs/realtimechat-.txt", rollingInterval: RollingInterval.Day));
-    
+
     builder.Services.AddOpenApi();
     builder.Services.AddControllers();
     builder.Services.AddSignalR();
