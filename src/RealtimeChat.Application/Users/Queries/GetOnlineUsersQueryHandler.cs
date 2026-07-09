@@ -9,6 +9,8 @@ namespace RealtimeChat.Application.Users.Queries;
 /// </summary>
 public interface IOnlineUserTracker
 {
+    void AddConnection(string connectionId, Guid userId);
+    void RemoveConnection(string connectionId);
     Task<IReadOnlyList<Guid>> GetOnlineUserIdsAsync(CancellationToken cancellationToken = default);
 }
 

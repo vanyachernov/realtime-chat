@@ -4,6 +4,7 @@ using RealtimeChat.Application.Common.DTO;
 using RealtimeChat.Application.Messages.Commands;
 using RealtimeChat.Application.Users.Commands;
 using RealtimeChat.Domain.Repositories;
+using RealtimeChat.Application.Users.Queries;
 
 namespace RealtimeChat.WebApi.Hubs;
 
@@ -17,12 +18,18 @@ public class ChatHub : Hub
     private readonly IMediator _mediator;
     private readonly IUserRepository _userRepository;
     private readonly IChatRoomRepository _chatRoomRepository;
+    private readonly IOnlineUserTracker _onlineTracker;
 
-    public ChatHub(IMediator mediator, IUserRepository userRepository, IChatRoomRepository chatRoomRepository)
+    public ChatHub(
+        IMediator mediator, 
+        IUserRepository userRepository, 
+        IChatRoomRepository chatRoomRepository,
+        IOnlineUserTracker onlineTracker)
     {
         _mediator = mediator;
         _userRepository = userRepository;
         _chatRoomRepository = chatRoomRepository;
+        _onlineTracker = onlineTracker;
     }
 
     /// <summary>
@@ -72,10 +79,16 @@ public class ChatHub : Hub
     /// <param name="username">Unique display name for the joining user (3–100 characters).</param>
     public async Task JoinRoom(string username)
     {
+        Guid userId;
         var existingUser = await _userRepository.GetByUsernameAsync(username);
         if (existingUser is null)
         {
-            await _mediator.Send(new RegisterUserCommand { Username = username });
+            var userDto = await _mediator.Send(new RegisterUserCommand { Username = username });
+            userId = userDto.Id;
+        }
+        else
+        {
+            userId = existingUser.Id;
         }
 
         var rooms = await _chatRoomRepository.GetAllAsync();
@@ -91,7 +104,15 @@ public class ChatHub : Hub
             await _chatRoomRepository.AddAsync(generalRoom);
         }
 
+        _onlineTracker.AddConnection(Context.ConnectionId, userId);
+
         await Groups.AddToGroupAsync(Context.ConnectionId, generalRoom.Name);
         await Clients.All.SendAsync("UserJoined", username);
+    }
+
+    public override Task OnDisconnectedAsync(Exception? exception)
+    {
+        _onlineTracker.RemoveConnection(Context.ConnectionId);
+        return base.OnDisconnectedAsync(exception);
     }
 }

@@ -20,6 +20,8 @@ public static class DependencyInjection
         services.AddScoped<IChatRoomRepository, ChatRoomRepository>();
         services.AddScoped<IMessageRepository, MessageRepository>();
 
+        services.AddSingleton<RealtimeChat.Application.Users.Queries.IOnlineUserTracker, RealtimeChat.Infrastructure.RealTime.InMemoryOnlineUserTracker>();
+
         return services;
     }
 }
