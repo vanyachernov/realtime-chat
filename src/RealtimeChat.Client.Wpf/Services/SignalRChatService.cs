@@ -6,7 +6,10 @@ public class SignalRChatService : IAsyncDisposable
 {
     private readonly HubConnection _connection;
 
-    public event Action<Guid, Guid, Guid, string, DateTime>? MessageReceived;
+    /// <summary>
+    /// Fired when a message is received. Parameters: username, content, sentAt.
+    /// </summary>
+    public event Action<string, string, DateTime>? MessageReceived;
     public event Action<string>? UserJoined;
 
     public SignalRChatService(string hubUrl)
@@ -20,12 +23,10 @@ public class SignalRChatService : IAsyncDisposable
         {
             if (raw is System.Text.Json.JsonElement json)
             {
-                var id = json.GetProperty("id").GetGuid();
-                var senderId = json.GetProperty("senderId").GetGuid();
-                var roomId = json.GetProperty("roomId").GetGuid();
+                var username = json.GetProperty("username").GetString() ?? "Unknown";
                 var content = json.GetProperty("content").GetString() ?? string.Empty;
                 var sentAt = json.GetProperty("sentAt").GetDateTime();
-                MessageReceived?.Invoke(id, senderId, roomId, content, sentAt);
+                MessageReceived?.Invoke(username, content, sentAt);
             }
         });
 

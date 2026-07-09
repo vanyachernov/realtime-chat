@@ -9,6 +9,7 @@ namespace RealtimeChat.Client.Wpf;
 /// </summary>
 public partial class App : System.Windows.Application
 {
+    private const string ApiBaseUrl = "http://localhost:5000";
     private const string HubUrl = "http://localhost:5000/chat";
 
     protected override void OnStartup(StartupEventArgs e)
@@ -26,7 +27,7 @@ public partial class App : System.Windows.Application
 
         var username = loginWindow.EnteredUsername;
         var chatService = new SignalRChatService(HubUrl);
-        var viewModel = new MainViewModel(chatService, username);
+        var viewModel = new MainViewModel(chatService, username, ApiBaseUrl);
 
         var mainWindow = new MainWindow(viewModel);
         mainWindow.Closed += (_, _) => Shutdown();

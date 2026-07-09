@@ -1,4 +1,7 @@
 using System.Collections.ObjectModel;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Input;
 using RealtimeChat.Client.Wpf.Services;
@@ -8,6 +11,8 @@ namespace RealtimeChat.Client.Wpf.ViewModels;
 public class MainViewModel : ViewModelBase
 {
     private readonly SignalRChatService _chatService;
+    private readonly HttpClient _httpClient;
+    private readonly string _apiBaseUrl;
     private string _currentMessage = string.Empty;
     private string _username = string.Empty;
     private string _connectionStatus = "Disconnected";
@@ -34,9 +39,11 @@ public class MainViewModel : ViewModelBase
 
     public ICommand SendCommand { get; }
 
-    public MainViewModel(SignalRChatService chatService, string username)
+    public MainViewModel(SignalRChatService chatService, string username, string apiBaseUrl)
     {
         _chatService = chatService;
+        _apiBaseUrl = apiBaseUrl.TrimEnd('/');
+        _httpClient = new HttpClient();
         Username = username;
 
         SendCommand = new RelayCommand(
@@ -54,11 +61,78 @@ public class MainViewModel : ViewModelBase
             ConnectionStatus = "Connecting...";
             await _chatService.ConnectAsync();
             await _chatService.JoinRoomAsync(Username);
+            ConnectionStatus = "Loading history...";
+            await LoadHistoryAsync();
             ConnectionStatus = "Connected";
         }
         catch (Exception ex)
         {
             ConnectionStatus = $"Error: {ex.Message}";
+        }
+    }
+
+    private async Task LoadHistoryAsync()
+    {
+        try
+        {
+            var roomId = await GetRoomIdAsync();
+            if (roomId is null) return;
+
+            var url = $"{_apiBaseUrl}/api/messages/history?roomId={roomId}&take=50";
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            var json = await response.Content.ReadAsStringAsync();
+            var messages = JsonSerializer.Deserialize<List<HistoryMessageDto>>(json, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            if (messages is null) return;
+
+            // Resolve sender usernames from senderId → username mapping.
+            // For simplicity, use a cached lookup per unique senderId.
+            var usernameLookup = new Dictionary<Guid, string>();
+
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            {
+                foreach (var m in messages)
+                {
+                    if (!usernameLookup.TryGetValue(m.SenderId, out var senderName))
+                    {
+                        senderName = m.SenderId.ToString()[..8];
+                        usernameLookup[m.SenderId] = senderName;
+                    }
+
+                    Messages.Add(new MessageViewModel(senderName, m.Content, m.SentAt));
+                }
+            });
+        }
+        catch
+        {
+            // History loading is best-effort; don't crash if server is unavailable.
+        }
+    }
+
+    private async Task<Guid?> GetRoomIdAsync()
+    {
+        try
+        {
+            var url = $"{_apiBaseUrl}/api/rooms";
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            var json = await response.Content.ReadAsStringAsync();
+            var rooms = JsonSerializer.Deserialize<List<RoomDto>>(json, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            return rooms?.FirstOrDefault()?.Id;
+        }
+        catch
+        {
+            return null;
         }
     }
 
@@ -83,11 +157,11 @@ public class MainViewModel : ViewModelBase
         }
     }
 
-    private void OnMessageReceived(Guid id, Guid senderId, Guid roomId, string content, DateTime sentAt)
+    private void OnMessageReceived(string username, string content, DateTime sentAt)
     {
         System.Windows.Application.Current.Dispatcher.Invoke(() =>
         {
-            Messages.Add(new MessageViewModel(Username, content, sentAt));
+            Messages.Add(new MessageViewModel(username, content, sentAt));
         });
     }
 
@@ -98,4 +172,7 @@ public class MainViewModel : ViewModelBase
             Messages.Add(new MessageViewModel("System", $"{username} joined the chat", DateTime.UtcNow));
         });
     }
+
+    private record HistoryMessageDto(Guid Id, Guid SenderId, Guid RoomId, string Content, DateTime SentAt);
+    private record RoomDto(Guid Id, string Name);
 }

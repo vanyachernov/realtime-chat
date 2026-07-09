@@ -53,7 +53,15 @@ public class ChatHub : Hub
             Content = content
         });
 
-        await Clients.All.SendAsync("ReceiveMessage", messageDto);
+        await Clients.All.SendAsync("ReceiveMessage", new
+        {
+            username,
+            messageDto.Id,
+            messageDto.SenderId,
+            messageDto.RoomId,
+            messageDto.Content,
+            messageDto.SentAt
+        });
     }
 
     /// <summary>
