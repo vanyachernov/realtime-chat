@@ -10,6 +10,6 @@ public interface IMessageRepository
     /// Retrieves message history for the specified room.
     /// </summary>
     /// <param name="take">The maximum number of messages to return.</param>
-    /// <returns>A list of messages sorted by <see cref="Message.SentAt"/> in descending order (newest first). Returns an empty collection if no messages are found.</returns>
+    /// <returns>A list of messages in chronological order (oldest first, natural for chat view). Returns an empty collection if no messages are found.</returns>
     Task<IEnumerable<Message>> GetHistoryAsync(Guid roomId, int take, CancellationToken cancellationToken = default);
 }
