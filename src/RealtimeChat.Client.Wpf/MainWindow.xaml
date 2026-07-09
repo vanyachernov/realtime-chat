@@ -1,12 +1,161 @@
-﻿<Window x:Class="RealtimeChat.Client.Wpf.MainWindow"
+<Window x:Class="RealtimeChat.Client.Wpf.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:RealtimeChat.Client.Wpf"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        xmlns:vm="clr-namespace:RealtimeChat.Client.Wpf.ViewModels"
+        Title="RealtimeChat" Height="600" Width="420"
+        WindowStartupLocation="CenterScreen"
+        Background="#1a1a2e">
 
+    <Window.DataContext>
+        <vm:MainViewModel />
+    </Window.DataContext>
+
+    <Grid Margin="0">
+        <Grid.RowDefinitions>
+            <!-- Header -->
+            <RowDefinition Height="52" />
+            <!-- Messages -->
+            <RowDefinition Height="*" />
+            <!-- Input area -->
+            <RowDefinition Height="60" />
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#16213e" BorderThickness="0,0,0,1" BorderBrush="#0f3460">
+            <Grid Margin="16,0">
+                <TextBlock Text="RealtimeChat"
+                           Foreground="#e2e2e2"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           VerticalAlignment="Center" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <TextBlock Text="Username:" Foreground="#7a7a9e" FontSize="12" VerticalAlignment="Center" Margin="0,0,6,0" />
+                    <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
+                             Width="100"
+                             FontSize="12"
+                             Foreground="#e2e2e2"
+                             Background="#0f3460"
+                             BorderBrush="#533483"
+                             BorderThickness="1"
+                             Padding="6,4"
+                             CaretBrush="#e94560"
+                             VerticalContentAlignment="Center" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Messages list -->
+        <ItemsControl Grid.Row="1"
+                       ItemsSource="{Binding Messages}"
+                       x:Name="MessagesList"
+                       Margin="0"
+                       Background="Transparent"
+                       BorderThickness="0"
+                       VirtualizingStackPanel.IsVirtualizing="True">
+            <ItemsControl.Template>
+                <ControlTemplate TargetType="ItemsControl">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  Padding="12,8">
+                        <ItemsPresenter />
+                    </ScrollViewer>
+                </ControlTemplate>
+            </ItemsControl.Template>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Margin="0,4" Padding="10,8" CornerRadius="8" Background="#16213e">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="{Binding Username}"
+                                           Foreground="#e94560"
+                                           FontSize="12"
+                                           FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding Content}"
+                                           Foreground="#e2e2e2"
+                                           FontSize="14"
+                                           TextWrapping="Wrap"
+                                           Margin="0,3,0,0" />
+                            </StackPanel>
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding Timestamp}"
+                                       Foreground="#7a7a9e"
+                                       FontSize="11"
+                                       VerticalAlignment="Bottom"
+                                       Margin="10,0,0,0" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!-- Input area -->
+        <Border Grid.Row="2" Background="#16213e" BorderThickness="0,1,0,0" BorderBrush="#0f3460">
+            <Grid Margin="12,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBox Grid.Column="0"
+                         Text="{Binding CurrentMessage, UpdateSourceTrigger=PropertyChanged}"
+                         FontSize="14"
+                         Foreground="#e2e2e2"
+                         Background="#0f3460"
+                         BorderBrush="#533483"
+                         BorderThickness="1"
+                         Padding="10,6"
+                         CaretBrush="#e94560"
+                         VerticalContentAlignment="Center"
+                         Margin="0,10,8,10">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding SendCommand}" />
+                    </TextBox.InputBindings>
+                </TextBox>
+
+                <Button Grid.Column="1"
+                        Command="{Binding SendCommand}"
+                        Content="▸"
+                        FontSize="20"
+                        Width="42" Height="36"
+                        Foreground="#e2e2e2"
+                        Background="#e94560"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Margin="0,10,0,10">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="Bd"
+                                                Background="{TemplateBinding Background}"
+                                                CornerRadius="6"
+                                                Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center"
+                                                              VerticalAlignment="Center" />
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="Bd" Property="Background" Value="#c03050" />
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter TargetName="Bd" Property="Background" Value="#a02040" />
+                                            </Trigger>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter TargetName="Bd" Property="Background" Value="#3a3a5e" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Grid>
+        </Border>
     </Grid>
 </Window>
