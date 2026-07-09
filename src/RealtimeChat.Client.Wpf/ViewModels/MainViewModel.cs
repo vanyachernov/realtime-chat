@@ -52,6 +52,18 @@ public class MainViewModel : ViewModelBase
 
         _chatService.MessageReceived += OnMessageReceived;
         _chatService.UserJoined += OnUserJoined;
+        _chatService.Reconnecting += error =>
+        {
+            System.Windows.Application.Current.Dispatcher.Invoke(() => ConnectionStatus = "Reconnecting...");
+        };
+        _chatService.Reconnected += connectionId =>
+        {
+            System.Windows.Application.Current.Dispatcher.Invoke(() => ConnectionStatus = "Connected");
+        };
+        _chatService.Closed += error =>
+        {
+            System.Windows.Application.Current.Dispatcher.Invoke(() => ConnectionStatus = "Disconnected");
+        };
     }
 
     public async Task InitializeAsync()
@@ -67,7 +79,11 @@ public class MainViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            ConnectionStatus = $"Error: {ex.Message}";
+            ConnectionStatus = "Connection Failed";
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            {
+                Messages.Add(new MessageViewModel("System", $"Could not connect to the chat server. Check your network connection. (Error: {ex.Message})", DateTime.UtcNow));
+            });
         }
     }
 
@@ -108,9 +124,12 @@ public class MainViewModel : ViewModelBase
                 }
             });
         }
-        catch
+        catch (Exception ex)
         {
-            // History loading is best-effort; don't crash if server is unavailable.
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            {
+                Messages.Add(new MessageViewModel("System", $"Could not load message history. Check your network connection. (Error: {ex.Message})", DateTime.UtcNow));
+            });
         }
     }
 

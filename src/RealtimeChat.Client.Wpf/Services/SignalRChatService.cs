@@ -11,6 +11,9 @@ public class SignalRChatService : IAsyncDisposable
     /// </summary>
     public event Action<string, string, DateTime>? MessageReceived;
     public event Action<string>? UserJoined;
+    public event Action<Exception?>? Reconnecting;
+    public event Action<string?>? Reconnected;
+    public event Action<Exception?>? Closed;
 
     public SignalRChatService(string hubUrl)
     {
@@ -34,6 +37,24 @@ public class SignalRChatService : IAsyncDisposable
         {
             UserJoined?.Invoke(username);
         });
+
+        _connection.Reconnecting += error =>
+        {
+            Reconnecting?.Invoke(error);
+            return Task.CompletedTask;
+        };
+
+        _connection.Reconnected += connectionId =>
+        {
+            Reconnected?.Invoke(connectionId);
+            return Task.CompletedTask;
+        };
+
+        _connection.Closed += error =>
+        {
+            Closed?.Invoke(error);
+            return Task.CompletedTask;
+        };
     }
 
     public async Task ConnectAsync()
