@@ -44,7 +44,7 @@ dotnet ef database update --project src/RealtimeChat.Infrastructure --startup-pr
 ```
 
 ### 3. Run the Backend (WebApi)
-Start the WebApi server. It will listen on `http://localhost:5000` (and `https://localhost:5001`).
+Start the WebApi server. It will listen on `http://localhost:5050` (and `https://localhost:5051`).
 ```bash
 cd src/RealtimeChat.WebApi
 dotnet run

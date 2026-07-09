@@ -9,8 +9,8 @@ namespace RealtimeChat.Client.Wpf;
 /// </summary>
 public partial class App : System.Windows.Application
 {
-    private const string ApiBaseUrl = "http://localhost:5000";
-    private const string HubUrl = "http://localhost:5000/chat";
+    private const string ApiBaseUrl = "http://localhost:5050";
+    private const string HubUrl = "http://localhost:5050/chat";
 
     protected override void OnStartup(StartupEventArgs e)
     {
