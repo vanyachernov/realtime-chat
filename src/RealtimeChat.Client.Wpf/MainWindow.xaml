@@ -6,10 +6,6 @@
         WindowStartupLocation="CenterScreen"
         Background="#1a1a2e">
 
-    <Window.DataContext>
-        <vm:MainViewModel />
-    </Window.DataContext>
-
     <Grid Margin="0">
         <Grid.RowDefinitions>
             <!-- Header -->
@@ -18,6 +14,8 @@
             <RowDefinition Height="*" />
             <!-- Input area -->
             <RowDefinition Height="60" />
+            <!-- Status bar -->
+            <RowDefinition Height="24" />
         </Grid.RowDefinitions>
 
         <!-- Header -->
@@ -29,17 +27,10 @@
                            FontWeight="SemiBold"
                            VerticalAlignment="Center" />
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <TextBlock Text="Username:" Foreground="#7a7a9e" FontSize="12" VerticalAlignment="Center" Margin="0,0,6,0" />
-                    <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
-                             Width="100"
-                             FontSize="12"
-                             Foreground="#e2e2e2"
-                             Background="#0f3460"
-                             BorderBrush="#533483"
-                             BorderThickness="1"
-                             Padding="6,4"
-                             CaretBrush="#e94560"
-                             VerticalContentAlignment="Center" />
+                    <TextBlock Text="{Binding Username, StringFormat='Signed in as {0}'}"
+                               Foreground="#7a7a9e"
+                               FontSize="12"
+                               VerticalAlignment="Center" />
                 </StackPanel>
             </Grid>
         </Border>
@@ -156,6 +147,15 @@
                     </Button.Style>
                 </Button>
             </Grid>
+        </Border>
+
+        <!-- Status bar -->
+        <Border Grid.Row="3" Background="#0f3460">
+            <TextBlock Text="{Binding ConnectionStatus}"
+                       Foreground="#7a7a9e"
+                       FontSize="11"
+                       Margin="12,0"
+                       VerticalAlignment="Center" />
         </Border>
     </Grid>
 </Window>

@@ -1,4 +1,5 @@
 using System.Windows;
+using RealtimeChat.Client.Wpf.ViewModels;
 
 namespace RealtimeChat.Client.Wpf;
 
@@ -7,8 +8,10 @@ namespace RealtimeChat.Client.Wpf;
 /// </summary>
 public partial class MainWindow : Window
 {
-    public MainWindow()
+    public MainWindow(MainViewModel viewModel)
     {
         InitializeComponent();
+        DataContext = viewModel;
+        Loaded += async (_, _) => await viewModel.InitializeAsync();
     }
 }
