@@ -1,8 +1,10 @@
+using RealtimeChat.Application;
 using RealtimeChat.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 {
     builder.Services.AddOpenApi();
+    builder.Services.AddApplication();
     
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
         ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
