@@ -2,9 +2,24 @@ using RealtimeChat.Application;
 using RealtimeChat.Infrastructure;
 using RealtimeChat.WebApi.Hubs;
 using RealtimeChat.WebApi.Middleware;
+using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File("logs/realtimechat-.txt", rollingInterval: RollingInterval.Day)
+    .CreateBootstrapLogger();
+
+try
 {
+    var builder = WebApplication.CreateBuilder(args);
+    
+    builder.Host.UseSerilog((context, services, configuration) => configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext()
+        .WriteTo.Console()
+        .WriteTo.File("logs/realtimechat-.txt", rollingInterval: RollingInterval.Day));
+    
     builder.Services.AddOpenApi();
     builder.Services.AddControllers();
     builder.Services.AddSignalR();
@@ -24,10 +39,9 @@ var builder = WebApplication.CreateBuilder(args);
                   .AllowCredentials();
         });
     });
-}
 
-var app = builder.Build();
-{
+    var app = builder.Build();
+
     app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
     if (app.Environment.IsDevelopment())
@@ -40,4 +54,12 @@ var app = builder.Build();
     app.MapControllers();
     app.MapHub<ChatHub>("/chat");
     app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
 }
