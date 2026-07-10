@@ -18,7 +18,7 @@ public class GetMessageHistoryQueryHandler : IRequestHandler<GetMessageHistoryQu
         var messages = await _messageRepository.GetHistoryAsync(request.RoomId, request.Take, cancellationToken);
 
         return messages
-            .Select(m => new MessageDto(m.Id, m.SenderId, m.RoomId, m.Content, m.SentAt))
+            .Select(m => new MessageDto(m.Id, m.SenderId, m.Sender?.Username ?? "Unknown", m.RoomId, m.Content, m.SentAt))
             .ToList();
     }
 }

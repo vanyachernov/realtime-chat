@@ -23,6 +23,7 @@ public class MessageRepository : IMessageRepository
     public async Task<IEnumerable<Message>> GetHistoryAsync(Guid roomId, int take, CancellationToken cancellationToken = default)
     {
         var messages = await _context.Messages
+            .Include(m => m.Sender)
             .Where(m => m.RoomId == roomId)
             .OrderByDescending(m => m.SentAt)
             .Take(take)

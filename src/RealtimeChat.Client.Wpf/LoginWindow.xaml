@@ -1,44 +1,54 @@
 <Window x:Class="RealtimeChat.Client.Wpf.LoginWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Join Chat" Height="200" Width="340"
+        Title="Join Chat" Height="260" Width="380"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        Background="#1a1a2e">
+        Background="#F9FAFB">
 
-    <Grid Margin="24">
+    <Grid Margin="30">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="16" />
+            <RowDefinition Height="8" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="24" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="24" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0"
-                   Text="Enter your username"
-                   Foreground="#e2e2e2"
-                   FontSize="16"
-                   FontWeight="SemiBold"
+                   Text="Welcome to RealtimeChat"
+                   Foreground="#111827"
+                   FontSize="22"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Center" />
+                   
+        <TextBlock Grid.Row="2"
+                   Text="Enter your username to join the conversation"
+                   Foreground="#6B7280"
+                   FontSize="14"
                    HorizontalAlignment="Center" />
 
-        <TextBox Grid.Row="2"
-                 x:Name="UsernameBox"
-                 FontSize="14"
-                 Foreground="#e2e2e2"
-                 Background="#0f3460"
-                 BorderBrush="#533483"
-                 BorderThickness="1"
-                 Padding="10,8"
-                 CaretBrush="#e94560"
-                 MaxLength="100" />
+        <Border Grid.Row="4" Background="#FFFFFF" BorderBrush="#D1D5DB" BorderThickness="1" CornerRadius="8">
+            <TextBox x:Name="UsernameBox"
+                     FontSize="15"
+                     Foreground="#111827"
+                     Background="Transparent"
+                     BorderThickness="0"
+                     Padding="12,10"
+                     CaretBrush="#3B82F6"
+                     VerticalContentAlignment="Center"
+                     MaxLength="100" />
+        </Border>
 
-        <Button Grid.Row="4"
-                Content="Join"
+        <Button Grid.Row="6"
+                Content="Join Chat"
                 Click="JoinButton_Click"
-                FontSize="14"
-                Height="36"
-                Foreground="#e2e2e2"
+                FontSize="15"
+                FontWeight="SemiBold"
+                Height="44"
+                Foreground="#FFFFFF"
                 Cursor="Hand"
                 BorderThickness="0">
             <Button.Style>
@@ -47,18 +57,18 @@
                         <Setter.Value>
                             <ControlTemplate TargetType="Button">
                                 <Border x:Name="Bd"
-                                        Background="#e94560"
-                                        CornerRadius="6"
+                                        Background="#3B82F6"
+                                        CornerRadius="8"
                                         Padding="0,6">
                                     <ContentPresenter HorizontalAlignment="Center"
                                                       VerticalAlignment="Center" />
                                 </Border>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="Bd" Property="Background" Value="#c03050" />
+                                        <Setter TargetName="Bd" Property="Background" Value="#2563EB" />
                                     </Trigger>
                                     <Trigger Property="IsPressed" Value="True">
-                                        <Setter TargetName="Bd" Property="Background" Value="#a02040" />
+                                        <Setter TargetName="Bd" Property="Background" Value="#1D4ED8" />
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>

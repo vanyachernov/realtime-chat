@@ -8,10 +8,12 @@ namespace RealtimeChat.Application.Messages.Commands;
 public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand, MessageDto>
 {
     private readonly IMessageRepository _messageRepository;
+    private readonly IUserRepository _userRepository;
 
-    public SendMessageCommandHandler(IMessageRepository messageRepository)
+    public SendMessageCommandHandler(IMessageRepository messageRepository, IUserRepository userRepository)
     {
         _messageRepository = messageRepository;
+        _userRepository = userRepository;
     }
 
     public async Task<MessageDto> Handle(SendMessageCommand request, CancellationToken cancellationToken)
@@ -27,6 +29,9 @@ public class SendMessageCommandHandler : IRequestHandler<SendMessageCommand, Mes
 
         await _messageRepository.AddAsync(message, cancellationToken);
 
-        return new MessageDto(message.Id, message.SenderId, message.RoomId, message.Content, message.SentAt);
+        var user = await _userRepository.GetByIdAsync(request.SenderId, cancellationToken);
+        var senderName = user?.Username ?? "Unknown";
+
+        return new MessageDto(message.Id, message.SenderId, senderName, message.RoomId, message.Content, message.SentAt);
     }
 }

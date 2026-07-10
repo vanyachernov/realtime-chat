@@ -11,4 +11,6 @@ public class Message
     /// Stored in UTC.
     /// </summary>
     public DateTime SentAt { get; set; }
+
+    public User Sender { get; set; } = null!;
 }

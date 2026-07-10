@@ -106,21 +106,11 @@ public class MainViewModel : ViewModelBase
 
             if (messages is null) return;
 
-            // Resolve sender usernames from senderId → username mapping.
-            // For simplicity, use a cached lookup per unique senderId.
-            var usernameLookup = new Dictionary<Guid, string>();
-
             System.Windows.Application.Current.Dispatcher.Invoke(() =>
             {
                 foreach (var m in messages)
                 {
-                    if (!usernameLookup.TryGetValue(m.SenderId, out var senderName))
-                    {
-                        senderName = m.SenderId.ToString()[..8];
-                        usernameLookup[m.SenderId] = senderName;
-                    }
-
-                    Messages.Add(new MessageViewModel(senderName, m.Content, m.SentAt));
+                    Messages.Add(new MessageViewModel(m.SenderName, m.Content, m.SentAt));
                 }
             });
         }
@@ -192,6 +182,6 @@ public class MainViewModel : ViewModelBase
         });
     }
 
-    private record HistoryMessageDto(Guid Id, Guid SenderId, Guid RoomId, string Content, DateTime SentAt);
+    private record HistoryMessageDto(Guid Id, Guid SenderId, string SenderName, Guid RoomId, string Content, DateTime SentAt);
     private record RoomDto(Guid Id, string Name);
 }
