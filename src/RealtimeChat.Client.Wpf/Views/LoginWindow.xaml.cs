@@ -1,6 +1,6 @@
 using System.Windows;
 
-namespace RealtimeChat.Client.Wpf;
+namespace RealtimeChat.Client.Wpf.Views;
 
 public partial class LoginWindow : Window
 {

@@ -1,7 +1,7 @@
 using System.Windows;
 using RealtimeChat.Client.Wpf.ViewModels;
 
-namespace RealtimeChat.Client.Wpf;
+namespace RealtimeChat.Client.Wpf.Views;
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml
