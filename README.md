@@ -4,8 +4,7 @@ A real-time messaging application demonstrating a clean, modern .NET architectur
 
 ## 📸 UI Screenshot
 
-> **[TODO: Insert UI Screenshot Here]**
-> *(Capture a screenshot of the WPF client showing the dark-themed message list and the connection status bar, and place the image link here, e.g., `![Chat UI](docs/ui-screenshot.png)`)*
+![Chat UI](docs/ui-screenshot.png)
 
 ## 🏗 Architecture
 
@@ -51,8 +50,9 @@ dotnet run
 ```
 
 ### 4. Run the Client (WPF)
-In a separate terminal (or from your IDE), start the WPF client. You can run multiple instances of the client to test real-time messaging!
+The WPF client must be run on a Windows machine. You can start it directly from **Visual Studio** (set `RealtimeChat.Client.Wpf` as the Startup Project and press F5), or via the command line:
 ```bash
 cd src/RealtimeChat.Client.Wpf
 dotnet run
 ```
+*Tip: You can launch multiple instances of the WPF client to test real-time chat between different users!*
