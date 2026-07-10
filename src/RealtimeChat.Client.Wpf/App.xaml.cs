@@ -1,6 +1,7 @@
 using System.Windows;
 using RealtimeChat.Client.Wpf.Services;
 using RealtimeChat.Client.Wpf.ViewModels;
+using RealtimeChat.Client.Wpf.Views;
 
 namespace RealtimeChat.Client.Wpf;
 
