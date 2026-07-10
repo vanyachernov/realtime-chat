@@ -4,7 +4,7 @@
         Title="Join Chat" MinWidth="380" MinHeight="260"
         WindowStartupLocation="CenterScreen"
         SizeToContent="WidthAndHeight"
-        Icon="icon.png"
+        Icon="/icon.png"
         ResizeMode="NoResize"
         Background="#F9FAFB">
 

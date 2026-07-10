@@ -4,7 +4,7 @@
         xmlns:vm="clr-namespace:RealtimeChat.Client.Wpf.ViewModels"
         Title="RealtimeChat" Height="600" Width="450"
         WindowStartupLocation="CenterScreen"
-        Icon="icon.png"
+        Icon="/icon.png"
         Background="#F3F4F6">
 
     <Grid Margin="0">
